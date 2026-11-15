@@ -19,6 +19,18 @@ _Avoid_: test case, sample
 **Fixture role**:
 Why a fixture pair was chosen: **gap case** (suspected to depend on JavaScript), **control** (mostly server-rendered, expected to show close to nothing) or **hybrid** (server-rendered, then hydrated or extended by JavaScript).
 
+## Links
+
+**Link**:
+An `<a href>` in a snapshot that leads somewhere other than the same page: a web address, a phone number or an email address. A link is identified by its destination alone; its anchor text is evidence, not identity.
+_Avoid_: anchor, href, URL (on its own)
+
+**Internal link**:
+A link whose destination is on the same site as the page, ignoring a leading `www.`.
+
+**External link**:
+A link whose destination is on any other site, subdomain, phone number or email address.
+
 ## Findings
 
 **Finding**:
