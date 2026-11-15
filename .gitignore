@@ -1,0 +1,4 @@
+# Snapshot HTML is third-party content: kept local, not published.
+fixtures/*/*.html
+.DS_Store
+node_modules/
