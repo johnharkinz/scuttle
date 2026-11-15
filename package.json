@@ -1,0 +1,12 @@
+{
+  "name": "scuttle-prototype-text-blocks",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "proto:blocks": "tsx prototype/text-blocks.proto.ts"
+  },
+  "devDependencies": {
+    "cheerio": "^1.2.0",
+    "tsx": "^4.23.15"
+  }
+}
