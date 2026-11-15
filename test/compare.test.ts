@@ -101,6 +101,10 @@ describe('links', () => {
     ]);
   });
 
+  it('treats a different port as external', () => {
+    expect(findings(page(''), page('<a href="https://example.com:8443/x">A</a>')).map(f => f.category === 'link' && f.scope)).toEqual(['external']);
+  });
+
   it('keys links on the URL without its fragment, keeping path case, trailing slash and query', () => {
     const initial = page('<a href="/Path/?utm_source=x#one">A</a>');
     expect(findings(initial, page('<a href="/Path/?utm_source=x#two">A</a>'))).toEqual([]);

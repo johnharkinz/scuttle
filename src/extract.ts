@@ -15,7 +15,8 @@ const SKIPPED = new Set(['script', 'style', 'template', 'noscript', 'svg', 'head
 const LANDMARKS = new Set<string>(['nav', 'header', 'footer', 'main', 'aside']);
 
 const SCHEMES = new Set(['http:', 'https:', 'tel:', 'mailto:']);
-const siteHost = (url: URL) => url.hostname.replace(/^www\./, '');
+// `host` includes a non-default port, so another port counts as another site.
+const siteHost = (url: URL) => url.host.replace(/^www\./, '');
 
 /** Text of a node, leaving out skipped elements. */
 function textOf(node: AnyNode): string {
