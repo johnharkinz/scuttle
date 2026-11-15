@@ -24,7 +24,7 @@
 - The snapshots were captured several minutes apart (initial first).
 - `outerHTML` omits the doctype and anything inside iframes.
 - Demo-style site; content is Portuguese (Portugal), booking via Fresha. Judge "useful" as if you were the owner.
-- The rendered snapshot includes a JavaScript-injected "Edit with Lovable" badge.
+- Both snapshots include the "Edit with Lovable" badge (`aside#lovable-badge` and its `lovable.dev` link). It is already in the initial snapshot, so it is not injected by JavaScript.
 - A marquee repeats one sentence four times in the rendered DOM.
 
 The snapshot HTML is third-party content and is gitignored; it exists only on the capturing machine.

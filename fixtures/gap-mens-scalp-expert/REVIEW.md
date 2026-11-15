@@ -16,7 +16,7 @@ npm run scuttle -- fixtures/gap-mens-scalp-expert/initial.html fixtures/gap-mens
 ## Misses and observations
 
 - **Header navigation labels** (Início, Serviços, Expert, Contato) are `<a href="#…">` fragment links with text outside any block, so they produce neither a link nor a text block. This is expected under the spec. The `/cursos` link in the same nav is reported.
-- **"Edit with Lovable" badge:** NOTES.md says it is injected by JavaScript, but the badge (`aside#lovable-badge` with its `lovable.dev` link) is already in the initial snapshot. Correctly, there is no finding.
+- **"Edit with Lovable" badge:** the badge (`aside#lovable-badge` with its `lovable.dev` link) is already in the initial snapshot. Correctly, there is no finding.
 - **Marquee:** its sentence repeats four times in the rendered DOM, and is reported once (“​MODERN CARE FOR MODERN MAN”), as the spec intends.
 - **Zero-width space:** that block starts with U+200B, which normalisation keeps (spec §4). It causes no false positive here, because there is no counterpart in the initial snapshot.
 
