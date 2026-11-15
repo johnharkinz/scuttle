@@ -43,6 +43,14 @@ _Avoid_: element, node, paragraph (for blocks in general)
 One reported difference between the two snapshots of a fixture pair, with evidence in the original values.
 _Avoid_: issue, diff, result, error
 
+**Direction**:
+Which way a finding points: **only in initial** (JavaScript removed or replaced it), **only after rendering** (JavaScript added it) or **changed** (both snapshots have a value, and the values differ). Only the title and meta description can be changed; links and text blocks are only ever present in one snapshot.
+_Avoid_: added, removed, delta
+
+**Landmark**:
+The page region a link or text block sits in: the nearest enclosing navigation, header, footer, main content or aside, if any. It is evidence for a finding, not part of its identity.
+_Avoid_: section, location, context
+
 **Finding label**:
 The human judgement given to a finding at review: **useful**, **harmless noise** or **false positive**.
 
