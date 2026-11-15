@@ -3,7 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "proto:blocks": "tsx prototype/text-blocks.proto.ts"
+    "proto:blocks": "tsx prototype/text-blocks.proto.ts",
+    "proto:report": "tsx prototype/report.proto.ts"
   },
   "devDependencies": {
     "cheerio": "^1.2.0",
