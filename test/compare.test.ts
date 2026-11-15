@@ -18,6 +18,11 @@ describe('text blocks', () => {
     expect(findings(page('<p>Book  an\n eye&nbsp;test</p>'), page('<p> book an Eye Test </p>'))).toEqual([]);
   });
 
+  it('does not strip zero-width characters from the text key', () => {
+    for (const zw of ['\u200b', '\ufeff'])
+      expect(findings(page('<p>Hi</p>'), page(`<p>${zw}Hi</p>`)).map(f => f.direction)).toEqual(['only in initial', 'only after rendering']);
+  });
+
   it('extracts content inside [hidden] and aria-hidden="true"', () => {
     expect(findings(page(''), page('<div hidden><p>Hidden</p></div><p aria-hidden="true">Aria hidden</p>'))).toEqual([
       { category: 'text', direction: 'only after rendering', text: 'Hidden', kind: 'p' },
