@@ -31,6 +31,12 @@ A link whose destination is on the same site as the page, ignoring a leading `ww
 **External link**:
 A link whose destination is on any other site, subdomain, phone number or email address.
 
+## Text
+
+**Text block**:
+A heading, paragraph, list item or similar unit of content in a snapshot, holding only its own text and not the text of any block inside it. A text block is identified by its text alone; whether it is a heading or a paragraph is evidence, not identity.
+_Avoid_: element, node, paragraph (for blocks in general)
+
 ## Findings
 
 **Finding**:
