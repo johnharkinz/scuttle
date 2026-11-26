@@ -6,6 +6,8 @@ This spec is ready to build. It was worked out on the [Scuttle v1 map](https://g
 
 **Since v1:** the Chrome extension was decided in [#19](https://github.com/johnharkinz/scuttle/issues/19#issuecomment-7197955290) and built in [#21](https://github.com/johnharkinz/scuttle/issues/21). It adds `extension/` and `scripts/`, and reuses `extract`, `compare` and `report` unchanged in behaviour. Sections 8, 9 and 11 note where it changes this spec. Everything else still holds for the CLI and for the core the extension shares.
 
+**Since v1, wording:** camas-design DEC-007 renamed the directions. *Only in initial* is now *only without JavaScript*, *only after rendering* is *only with JavaScript* and *changed* is *different with JavaScript*, in the code, the JSON and both reports. This spec keeps the old names.
+
 ## 1. Purpose and limits
 
 Scuttle compares what the server sends with what JavaScript reveals. Nothing more. Fewer trustworthy findings beat a sophisticated report.

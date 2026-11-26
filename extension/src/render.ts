@@ -7,7 +7,7 @@ import type { Analysis, RawCapture } from './core.ts';
 const ESCAPES: Record<string, string> = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
 const esc = (s: string) => s.replace(/[&<>"']/g, c => ESCAPES[c]);
 
-const DIRECTIONS: Direction[] = ['only in initial', 'only after rendering', 'changed'];
+const DIRECTIONS: Direction[] = ['only without JavaScript', 'only with JavaScript', 'different with JavaScript'];
 const MAX_TEXT = 160;
 const cut = (s: string) => {
   const chars = [...s];
@@ -15,8 +15,8 @@ const cut = (s: string) => {
 };
 
 /**
- * A direction marker: the mark's wing cases, in ink (DEC-006). Outlined is only in initial, solid is
- * only after rendering, and the pair is changed. Decorative: the direction's words always sit beside it.
+ * A direction marker: the mark's wing cases, in ink (DEC-006). Outlined is only without JavaScript, solid is
+ * only with JavaScript, and the pair is different with JavaScript. Decorative: the direction's words always sit beside it.
  */
 export function directionMarker(direction: Direction, height = 14): string {
   const w = Math.round((height * 4) / 7);
@@ -24,26 +24,26 @@ export function directionMarker(direction: Direction, height = 14): string {
   const outline = `<rect x=".75" y=".75" width="${w - 1.5}" height="${height - 1.5}" fill="none" stroke="currentColor" stroke-width="1.5"/>`;
   const solid = (x: number) => `<rect x="${x}" y="0" width="${w}" height="${height}" fill="currentColor"/>`;
   const [width, shapes] =
-    direction === 'changed' ? [2 * w + gap, outline + solid(w + gap)] : direction === 'only in initial' ? [w, outline] : [w, solid(0)];
+    direction === 'different with JavaScript' ? [2 * w + gap, outline + solid(w + gap)] : direction === 'only without JavaScript' ? [w, outline] : [w, solid(0)];
   return `<svg class="direction" aria-hidden="true" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">${shapes}</svg>`;
 }
 
 // What each group's direction means. Never whether it matters: Scuttle doesn't judge findings.
 const GROUP_EXPLANATIONS: Record<string, string> = {
-  'title|only in initial': 'The server sends this title, and it’s gone once JavaScript runs.',
-  'title|only after rendering': 'The server sends no title. JavaScript adds this one.',
-  'title|changed': 'The server sends one title, and JavaScript replaces it with another.',
-  'description|only in initial': 'The server sends this meta description, and it’s gone once JavaScript runs.',
-  'description|only after rendering': 'The server sends no meta description. JavaScript adds this one.',
-  'description|changed': 'The server sends one meta description, and JavaScript replaces it with another.',
-  'link|only in initial': 'These links are in what the server sends. JavaScript removes or replaces them.',
-  'link|only after rendering': 'These links appear only after JavaScript runs. The server doesn’t send them.',
-  'text|only in initial': 'This text is in what the server sends. JavaScript removes or replaces it.',
-  'text|only after rendering': 'This text appears only after JavaScript runs. The server doesn’t send it.',
+  'title|only without JavaScript': 'The server sends this title, and JavaScript removes it. Only crawlers that don’t run JavaScript see it.',
+  'title|only with JavaScript': 'The server sends no title. JavaScript adds this one, so crawlers that don’t run JavaScript miss it.',
+  'title|different with JavaScript': 'The server sends one title, and JavaScript replaces it. Crawlers see one or the other, depending on whether they run JavaScript.',
+  'description|only without JavaScript': 'The server sends this meta description, and JavaScript removes it. Only crawlers that don’t run JavaScript see it.',
+  'description|only with JavaScript': 'The server sends no meta description. JavaScript adds this one, so crawlers that don’t run JavaScript miss it.',
+  'description|different with JavaScript': 'The server sends one meta description, and JavaScript replaces it. Crawlers see one or the other, depending on whether they run JavaScript.',
+  'link|only without JavaScript': 'The server sends these links, and JavaScript removes or replaces them. Only crawlers that don’t run JavaScript see them.',
+  'link|only with JavaScript': 'JavaScript adds these links. The server doesn’t send them, so crawlers that don’t run JavaScript miss them.',
+  'text|only without JavaScript': 'The server sends this text, and JavaScript removes or replaces it. Only crawlers that don’t run JavaScript see it.',
+  'text|only with JavaScript': 'JavaScript adds this text. The server doesn’t send it, so crawlers that don’t run JavaScript miss it.',
 };
 
 const FINDINGS_EXPLAINED =
-  'Each finding is in one snapshot and not the other. Whatever is only after rendering isn’t in what the server sends, so only readers that run JavaScript get it. Scuttle doesn’t judge whether a finding matters, or know which crawlers run JavaScript.';
+  'Each finding is something the page has only with JavaScript, only without it, or differently with it. Whatever is only with JavaScript isn’t in what the server sends, so crawlers that don’t run JavaScript miss it. Scuttle doesn’t judge whether a finding matters, or know which crawlers run JavaScript.';
 
 /** The report's opening line: counts by direction, and by category when there's only one direction. */
 export function lede(findings: Finding[]): string {
@@ -71,8 +71,8 @@ function findingHtml(f: Finding): string {
   if ('initial' in f) {
     return (
       `<li><div class="values">` +
-      `<span class="label">${directionMarker('only in initial', 11)}Initial</span><span class="quote">${metadata(f.initial)}</span>` +
-      `<span class="label">${directionMarker('only after rendering', 11)}After rendering</span><span class="quote">${metadata(f.rendered)}</span>` +
+      `<span class="label">${directionMarker('only without JavaScript', 11)}Without JavaScript</span><span class="quote">${metadata(f.initial)}</span>` +
+      `<span class="label">${directionMarker('only with JavaScript', 11)}With JavaScript</span><span class="quote">${metadata(f.rendered)}</span>` +
       `</div></li>`
     );
   }
@@ -131,13 +131,13 @@ function conditionsHtml(capture: RawCapture): string {
   const rows: [string, string][] = [
     ['Page URL', esc(pageUrl)],
     ['Final URL after redirects', finalUrl],
-    ['Rendered snapshot captured', `${time(rendered.capturedAt)}<br>${plain(sinceLoad)}<br>readyState ${esc(rendered.readyState)}`],
-    ['Initial snapshot fetched', `${time(initial.startedAt)}<br>${plain(`${seconds(Math.abs(gap))} ${gap < 0 ? 'before' : 'after'} the rendered snapshot`)}`],
+    ['Captured with JavaScript', `${time(rendered.capturedAt)}<br>${plain(sinceLoad)}<br>readyState ${esc(rendered.readyState)}`],
+    ['Fetched without JavaScript', `${time(initial.startedAt)}<br>${plain(`${seconds(Math.abs(gap))} ${gap < 0 ? 'before' : 'after'} the capture with JavaScript`)}`],
     ['Viewport', `${rendered.viewport.width}×${rendered.viewport.height}`],
     ['User agent', esc(rendered.userAgent)],
   ];
   const statements = [
-    'Signed-in state and consent choices are not controlled. The rendered snapshot is the page as it was in your tab; the initial snapshot was fetched without cookies.',
+    'Signed-in state and consent choices are not controlled. The page with JavaScript is your tab as it was; the page without JavaScript was fetched without cookies.',
     ...notes,
   ];
   return (
@@ -169,13 +169,13 @@ export function renderReportHtml({ capture, result }: Analysis): string {
   if (result.state === 'blocked') {
     main =
       `<div class="blocked"><span class="watch" aria-hidden="true"></span><div>` +
-      `<h2>Initial snapshot blocked</h2><p class="reason">${esc(result.reason)}</p>` +
+      `<h2>Fetch without JavaScript blocked</h2><p class="reason">${esc(result.reason)}</p>` +
       `<p>Scuttle fetched this page without cookies and got something other than the page, so there’s nothing to compare it with. There are no findings.</p>` +
       `<p class="explain">${BLOCKED_EXPLAINED}</p></div></div>`;
   } else if (!result.findings.length) {
     head +=
       `<p class="lede">No differences found.</p>` +
-      `<p class="explain">The title, meta description, links and text blocks are the same in both snapshots. That covers only what Scuttle compares, under the conditions it was captured in.</p>`;
+      `<p class="explain">The title, meta description, links and text blocks are the same with and without JavaScript. That covers only what Scuttle compares, under the conditions it was captured in.</p>`;
     main = summaryHtml([]) + keyConditionsHtml(capture);
   } else {
     head += `<p class="lede">${lede(result.findings)}</p><p class="explain">${FINDINGS_EXPLAINED}</p>`;

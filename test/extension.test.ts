@@ -24,7 +24,7 @@ describe('analyse', () => {
   it('compares an HTML response with the rendered snapshot', () => {
     expect(analyse(capture({})).result).toEqual({
       state: 'compared',
-      findings: [{ category: 'link', direction: 'only after rendering', url: 'https://example.com/book', scope: 'internal', texts: ['Book'] }],
+      findings: [{ category: 'link', direction: 'only with JavaScript', url: 'https://example.com/book', scope: 'internal', texts: ['Book'] }],
     });
   });
 

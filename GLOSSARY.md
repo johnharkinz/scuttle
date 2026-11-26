@@ -5,12 +5,12 @@ Scuttle compares what the server sends with what JavaScript reveals, and reports
 ## Snapshots
 
 **Initial snapshot**:
-The HTML of a page as the server first sends it, before any JavaScript runs.
-_Avoid_: source, raw HTML, server HTML
+The HTML of a page as the server first sends it, before any JavaScript runs. Shown to readers as **without JavaScript**.
+_Avoid_: source, raw HTML, server HTML, headless render
 
 **Rendered snapshot**:
-The DOM of the same page after a browser has run its JavaScript and the page has settled.
-_Avoid_: rendered HTML, final HTML, live DOM
+The DOM of the same page after a browser has run its JavaScript and the page has settled. Shown to readers as **with JavaScript**.
+_Avoid_: rendered HTML, final HTML, live DOM, full render
 
 **Fixture pair**:
 An initial snapshot and a rendered snapshot of one URL, captured under broadly equivalent conditions, with notes on those conditions.
@@ -44,8 +44,8 @@ One reported difference between the two snapshots of a fixture pair, with eviden
 _Avoid_: issue, diff, result, error
 
 **Direction**:
-Which way a finding points: **only in initial** (JavaScript removed or replaced it), **only after rendering** (JavaScript added it) or **changed** (both snapshots have a value, and the values differ). Only the title and meta description can be changed; links and text blocks are only ever present in one snapshot.
-_Avoid_: added, removed, delta
+Which way a finding points: **only without JavaScript** (only in the initial snapshot: JavaScript removed or replaced it), **only with JavaScript** (only in the rendered snapshot: JavaScript added it) or **different with JavaScript** (both snapshots have a value, and the values differ). Only the title and meta description can be different with JavaScript; links and text blocks are only ever present in one snapshot. The names say what a crawler gets depending on whether it runs JavaScript (camas-design DEC-007).
+_Avoid_: only in initial, only after rendering, changed, added, removed, delta
 
 **Landmark**:
 The page region a link or text block sits in: the nearest enclosing navigation, header, footer, main content or aside, if any. It is evidence for a finding, not part of its identity.

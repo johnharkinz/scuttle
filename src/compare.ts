@@ -1,7 +1,7 @@
 import type { Landmark, PageSnapshot } from './extract.ts';
 import { linkKey, textKey } from './normalise.ts';
 
-export type Direction = 'only in initial' | 'only after rendering' | 'changed';
+export type Direction = 'only without JavaScript' | 'only with JavaScript' | 'different with JavaScript';
 export type Finding =
   | { category: 'title' | 'description'; direction: Direction; initial: string | null; rendered: string | null }
   | { category: 'link'; direction: Direction; url: string; scope: 'internal' | 'external'; texts: string[]; landmark?: Landmark }
@@ -22,11 +22,11 @@ function onlyIn<T>(from: Map<string, T[]>, to: Map<string, T[]>): T[][] {
   return [...from].filter(([k]) => !to.has(k)).map(([, items]) => items);
 }
 
-/** Both directions: what's only in initial, then what's only after rendering. */
+/** Both directions: what's only without JavaScript, then what's only with JavaScript. */
 function pairs<T>([initial, rendered]: T[]) {
   return [
-    ['only in initial', initial, rendered],
-    ['only after rendering', rendered, initial],
+    ['only without JavaScript', initial, rendered],
+    ['only with JavaScript', rendered, initial],
   ] as const;
 }
 
@@ -38,7 +38,7 @@ export function compare(initial: PageSnapshot, rendered: PageSnapshot): Finding[
     const [a, b] = [initial[category], rendered[category]];
     const [ka, kb] = [a, b].map(v => (v === null ? '' : textKey(v)));
     if (ka === kb) continue; // same text, or no value in either
-    const direction = !ka ? 'only after rendering' : !kb ? 'only in initial' : 'changed';
+    const direction = !ka ? 'only with JavaScript' : !kb ? 'only without JavaScript' : 'different with JavaScript';
     findings.push({ category, direction, initial: a, rendered: b });
   }
 
