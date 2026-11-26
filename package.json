@@ -11,7 +11,8 @@
     "typecheck": "tsc --noEmit && tsc --noEmit -p extension",
     "build:extension": "node scripts/build-extension.mjs",
     "preview:extension": "node scripts/preview-extension.mjs",
-    "try:extension": "node scripts/try-extension.mjs"
+    "try:extension": "node scripts/try-extension.mjs",
+    "icons": "node scripts/render-icons.mjs"
   },
   "dependencies": {
     "cheerio": "^1.2.0",
