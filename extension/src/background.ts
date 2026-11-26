@@ -54,7 +54,7 @@ async function compareTab(tabId: number): Promise<CompareResponse> {
     const [injection] = await chrome.scripting.executeScript({ target: { tabId }, func: readRendered });
     rendered = injection.result as RenderedCapture;
   } catch (e) {
-    return { ok: false, error: `Scuttle can’t read this page: ${(e as Error).message}` };
+    return { ok: false, error: 'Scuttle can’t read this page. The browser didn’t let it.', detail: (e as Error).message };
   }
   const initial = await fetchInitial(tab.url);
   const token = crypto.randomUUID();
@@ -65,7 +65,7 @@ async function compareTab(tabId: number): Promise<CompareResponse> {
 
 chrome.runtime.onMessage.addListener((message: CompareRequest | TakeRequest, _sender, sendResponse) => {
   if (message.type === 'scuttle:compare') {
-    compareTab(message.tabId).then(sendResponse, e => sendResponse({ ok: false, error: String(e) }));
+    compareTab(message.tabId).then(sendResponse, e => sendResponse({ ok: false, error: 'Scuttle couldn’t compare this page.', detail: String(e) }));
     return true; // responds asynchronously
   }
   if (message.type === 'scuttle:take') {

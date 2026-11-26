@@ -40,7 +40,13 @@ ${missing.length ? `<h2>Missing fixtures</h2><p>Snapshot HTML is gitignored, so 
 /** An extension page, with the stub loaded before the page's own scripts. */
 const page = name => readFileSync(join(ext, name), 'utf8').replace('<script', '<script src="/preview-stub.js"></script>\n    <script');
 
-const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.md': 'text/markdown; charset=utf-8' };
+const TYPES = {
+  '.html': 'text/html; charset=utf-8',
+  '.js': 'text/javascript; charset=utf-8',
+  '.md': 'text/markdown; charset=utf-8',
+  '.css': 'text/css; charset=utf-8',
+  '.woff2': 'font/woff2',
+};
 const send = (res, status, body, type = TYPES['.html']) => res.writeHead(status, { 'content-type': type, 'cache-control': 'no-store' }).end(body);
 
 createServer((req, res) => {
@@ -48,6 +54,9 @@ createServer((req, res) => {
   if (path === '/') return send(res, 200, index());
   if (path === '/popup.html' || path === '/report.html') return send(res, 200, page(path.slice(1)));
   if (path === '/preview-stub.js') return send(res, 200, stub, TYPES['.js']);
+  if (path === '/extension.css') return send(res, 200, readFileSync(join(ext, 'extension.css')), TYPES['.css']);
+  const font = /^\/fonts\/([\w-]+\.woff2)$/.exec(path);
+  if (font && existsSync(join(ext, 'fonts', font[1]))) return send(res, 200, readFileSync(join(ext, 'fonts', font[1])), TYPES['.woff2']);
   const dist = /^\/dist\/([\w-]+\.js)$/.exec(path);
   if (dist && existsSync(join(ext, 'dist', dist[1]))) return send(res, 200, readFileSync(join(ext, 'dist', dist[1])), TYPES['.js']);
   // Only the three files of a known fixture, so nothing else in the repo is served.

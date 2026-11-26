@@ -74,7 +74,7 @@ The extension in `extension/` runs the same comparison on the page you're viewin
 - **Blocked fetch:** a non-2xx response, a non-HTML response or a recognised bot challenge (Cloudflare, Imperva) is reported as *initial snapshot blocked*, with the reason and no findings.
 - **The report** shows the CLI report's findings and groups, plus the capture conditions: both URLs, both times and the gap between them, the time since the page loaded, `readyState`, viewport and user agent. Signed-in state and consent choices are not controlled.
 
-The pages are plain and unstyled until a design brief for them is agreed in `camas-design`.
+The pages follow `camas-design` DEC-006, and the fonts are bundled in `extension/fonts/`, so nothing is fetched to show them.
 
 ```sh
 npm run build:extension    # bundle into extension/dist/, then load extension/ unpacked

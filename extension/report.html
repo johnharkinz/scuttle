@@ -4,10 +4,15 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Scuttle</title>
+    <link rel="stylesheet" href="extension.css" />
   </head>
   <body>
-    <h1>Scuttle report</h1>
-    <main><p>Comparing…</p></main>
+    <header class="topbar">
+      <svg class="mark" aria-hidden="true" width="22" height="22" viewBox="0 0 16 16"><rect width="16" height="16" fill="#016a75" /><rect x="6" y="3" width="4" height="2" fill="#f8f6f0" /><rect x="3.636" y="6.636" width="2.727" height="5.727" fill="none" stroke="#f8f6f0" stroke-width="1.273" /><rect x="9" y="6" width="4" height="7" fill="#f8f6f0" /><rect x="13" y="0" width="3" height="3" fill="#d9481f" /></svg>
+      <span class="name">Scuttle</span>
+      <span class="sub">report</span>
+    </header>
+    <main><p class="message" role="status">Comparing…</p></main>
     <script type="module" src="dist/report-page.js"></script>
   </body>
 </html>

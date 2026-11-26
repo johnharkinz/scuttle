@@ -1,0 +1,536 @@
+/* Scuttle's popup and report page: the Camas system (camas-design DEC-002) as DEC-006 applies it.
+   The fonts are bundled so the extension never fetches one. */
+@font-face {
+  font-family: "Schibsted Grotesk";
+  font-style: normal;
+  font-weight: 400 800;
+  src: url("fonts/schibsted-grotesk-latin.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "IBM Plex Mono";
+  font-style: normal;
+  font-weight: 400;
+  src: url("fonts/ibm-plex-mono-400-latin.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "IBM Plex Mono";
+  font-style: normal;
+  font-weight: 500;
+  src: url("fonts/ibm-plex-mono-500-latin.woff2") format("woff2");
+}
+
+:root {
+  color-scheme: light;
+
+  --paper: #f8f6f0;
+  --raised: #fffdf8;
+  --inset: #edeae2;
+  --ink: #17171a;
+  --ink-2: #4a4a50;
+  --ink-3: #6b6b70;
+  --rule: #d6d2c7;
+  /* Vermilion is spent on the mark's corner and the focus ring only. Findings are evidence, not problems. */
+  --look-here: #d9481f;
+  /* Ochre: Scuttle couldn't compare. */
+  --watch: #b7791f;
+
+  --font-ui: "Schibsted Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: 14px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 2px solid var(--look-here);
+  outline-offset: 2px;
+}
+
+a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+p {
+  margin: 0;
+}
+
+/* ---------- shared ---------- */
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 48px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--ink);
+}
+
+.topbar .mark {
+  flex-shrink: 0;
+}
+
+.topbar h1,
+.topbar .name {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.topbar .sub {
+  color: var(--ink-2);
+}
+
+/* Inset: it holds values or evidence. */
+.inset {
+  background: var(--inset);
+  box-shadow: inset 0 1px 3px rgb(23 23 26 / 0.1);
+}
+
+/* Direction markers: the mark's wing cases, in ink, always beside their words (DEC-006). */
+.direction {
+  flex-shrink: 0;
+  color: var(--ink);
+}
+
+/* Scuttle couldn't compare: the ochre watch marker. Shape and words, colour third. */
+.watch {
+  flex-shrink: 0;
+  width: 10px;
+  height: 10px;
+  margin-top: 4px;
+  border: 1.5px solid var(--watch);
+  box-shadow: inset 0 -4px 0 var(--watch);
+}
+
+/* ---------- popup ---------- */
+
+.popup {
+  width: 320px;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 16px 16px;
+}
+
+/* Primary: ink, raised, one per view. The hard edge below is what the press removes. */
+.primary {
+  height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--ink);
+  border-radius: 0;
+  background: var(--ink);
+  box-shadow: 0 2px 0 #000, inset 0 1px 0 rgb(255 255 255 / 0.15);
+  color: var(--raised);
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.primary:hover:not(:disabled) {
+  background: #2b2b30;
+}
+
+.primary:active:not(:disabled) {
+  box-shadow: 0 1px 0 #000;
+  transform: translateY(1px);
+}
+
+.primary:disabled {
+  border-color: var(--ink-2);
+  background: var(--ink-2);
+  box-shadow: none;
+  cursor: default;
+}
+
+#message:empty {
+  display: none;
+}
+
+.status,
+.promise {
+  color: var(--ink-2);
+  font-size: 13px;
+}
+
+.limit {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  font-size: 13px;
+}
+
+.browser-says {
+  margin-top: 6px;
+  padding: 6px 10px;
+  color: var(--ink-2);
+  font: 12px/1.45 var(--font-mono);
+  overflow-wrap: anywhere;
+}
+
+/* ---------- report ---------- */
+
+.report {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: "head" "main" "cond";
+  padding: 28px 20px 64px;
+}
+
+.report-head {
+  grid-area: head;
+}
+
+.report-main {
+  grid-area: main;
+  min-width: 0;
+}
+
+.conditions {
+  grid-area: cond;
+  min-width: 0;
+  margin-top: 40px;
+}
+
+.kicker {
+  margin-bottom: 4px;
+  color: var(--ink-2);
+  font-size: 13px;
+}
+
+.page-url {
+  margin: 0 0 14px;
+  font: 500 20px/1.3 var(--font-mono);
+  letter-spacing: -0.01em;
+  overflow-wrap: anywhere;
+}
+
+.lede {
+  max-width: 44ch;
+  margin-bottom: 6px;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.3;
+}
+
+.explain {
+  max-width: 66ch;
+  margin-bottom: 24px;
+  color: var(--ink-2);
+}
+
+.summary {
+  width: 100%;
+  margin-bottom: 8px;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.summary th,
+.summary td {
+  padding: 6px 5px;
+  border-bottom: 1px solid var(--rule);
+  text-align: left;
+  vertical-align: bottom;
+}
+
+.summary thead th {
+  border-bottom-color: var(--ink);
+  color: var(--ink-2);
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.summary thead .direction {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.summary tbody th {
+  padding-left: 0;
+  font-weight: 600;
+}
+
+.summary td {
+  font-size: 15px;
+}
+
+.summary td.none {
+  color: var(--ink-3);
+}
+
+.summary td a {
+  font-weight: 700;
+}
+
+.key-conditions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 10px;
+  margin-bottom: 8px;
+  padding-top: 10px;
+  color: var(--ink-2);
+  font-size: 12.5px;
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.group {
+  margin-top: 36px;
+}
+
+/* Sticky, so the direction is still showing 80 findings into a group. */
+.group-head {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0 8px;
+  border-bottom: 1px solid var(--ink);
+  background: var(--paper);
+}
+
+.group-head h2 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.group-explain {
+  margin: 8px 0 10px;
+  color: var(--ink-2);
+}
+
+.findings {
+  margin: 0;
+  padding: 2px 12px;
+  list-style: none;
+}
+
+.findings > li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.findings > li:last-child {
+  border-bottom: 0;
+}
+
+/* Quoted page text is content, so it's in grotesk; the quote marks step back. */
+.quote {
+  text-wrap: pretty;
+}
+
+.quote-mark {
+  color: var(--ink-3);
+}
+
+.evidence {
+  color: var(--ink-2);
+  font: 12px/1.6 var(--font-mono);
+}
+
+.link-url {
+  font: 13px/1.45 var(--font-mono);
+  overflow-wrap: anywhere;
+}
+
+.anchors {
+  color: var(--ink-2);
+  font-size: 13px;
+  text-wrap: pretty;
+}
+
+.anchors b {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.values {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 4px 10px;
+  align-items: baseline;
+}
+
+.values .label {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  color: var(--ink-2);
+  font-size: 12.5px;
+  white-space: nowrap;
+}
+
+.blocked {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.blocked .watch {
+  margin-top: 7px;
+}
+
+.blocked h2 {
+  margin: 0 0 6px;
+  font-size: 20px;
+  letter-spacing: -0.015em;
+}
+
+.blocked p {
+  max-width: 62ch;
+  margin-bottom: 6px;
+}
+
+.blocked .reason {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.blocked .explain {
+  margin-bottom: 0;
+}
+
+.conditions h2 {
+  margin: 0 0 8px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.conditions dl {
+  margin: 0;
+  padding: 6px 14px 10px;
+}
+
+.conditions dt {
+  margin-top: 8px;
+  color: var(--ink-2);
+  font-size: 12px;
+}
+
+.conditions dd {
+  margin: 1px 0 0;
+  font: 12.5px/1.45 var(--font-mono);
+  overflow-wrap: anywhere;
+}
+
+.conditions dd .plain {
+  font-family: var(--font-ui);
+  font-size: 13px;
+}
+
+.conditions .statement {
+  margin-top: 10px;
+  color: var(--ink-2);
+  font-size: 13px;
+}
+
+.message {
+  max-width: 520px;
+  padding: 56px 24px;
+}
+
+.message h1 {
+  margin: 0 0 10px;
+  font-size: 22px;
+  letter-spacing: -0.015em;
+}
+
+.message p {
+  margin-bottom: 10px;
+  color: var(--ink-2);
+}
+
+.message p:first-of-type {
+  color: var(--ink);
+}
+
+@media (min-width: 640px) {
+  .findings > li.text {
+    grid-template-columns: minmax(0, 1fr) 150px;
+    column-gap: 20px;
+  }
+
+  .findings > li.text .evidence {
+    text-align: right;
+  }
+
+  .summary th,
+  .summary td {
+    padding: 7px 8px;
+  }
+
+  .summary thead th {
+    font-size: 12.5px;
+  }
+
+  .summary td {
+    width: 22%;
+  }
+}
+
+/* Normal width: the capture conditions stay in view beside the findings. */
+@media (min-width: 900px) {
+  .report {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 40px 96px;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    grid-template-areas: "head cond" "main cond";
+    /* The conditions span both rows; give any extra height to the findings, not the head. */
+    grid-template-rows: auto 1fr;
+    column-gap: 48px;
+  }
+
+  .conditions {
+    position: sticky;
+    top: 24px;
+    align-self: start;
+    max-height: calc(100vh - 48px);
+    margin-top: 0;
+    padding-top: 4px;
+    overflow-y: auto;
+  }
+
+  .key-conditions {
+    display: none;
+  }
+
+  .page-url {
+    font-size: 24px;
+  }
+}

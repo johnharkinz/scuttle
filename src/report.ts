@@ -40,10 +40,10 @@ export function groupFindings(findings: Finding[]) {
   const summary = CATEGORIES.map(([category, label]) => {
     const isMetadata = category === 'title' || category === 'description';
     const counts = DIRECTIONS.map(d => (d === 'changed' && !isMetadata ? null : group(category, d).length));
-    return { label, counts };
+    return { category, label, counts };
   });
   const groups = CATEGORIES.flatMap(([category, label]) =>
-    DIRECTIONS.map(direction => ({ label, direction, items: group(category, direction) })),
+    DIRECTIONS.map(direction => ({ category, label, direction, items: group(category, direction) })),
   ).filter(g => g.items.length);
   return { summary, groups };
 }
