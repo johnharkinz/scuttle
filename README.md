@@ -80,10 +80,12 @@ The pages follow `camas-design` DEC-006, and the fonts are bundled in `extension
 npm run build:extension    # bundle into extension/dist/, then load extension/ unpacked
 npm run preview:extension  # the real popup and report pages at http://localhost:4321/, fed from fixtures/
 npm run try:extension      # Chromium with the extension loaded, in a throwaway profile
+npm run icons              # re-render extension/icons/ from the mark, after changing it
 ```
 
 - **`preview:extension`** works in any browser. A stub stands in for the `chrome.*` capture, reading fixture pairs from `fixtures/` with the conditions in their `NOTES.md`. Fixtures whose snapshots aren't on your machine are listed as missing. It also has a blocked example and an unsupported-page example.
 - **`try:extension [url]`** opens Chrome for Testing from `playwright-core`, because branded Chrome ignores `--load-extension`. If it isn't installed, run `npx playwright-core install chromium`. Open Scuttle from the extensions (puzzle) menu. The profile is deleted when you close the browser.
+- **`icons`** renders the toolbar icons from the Scuttle mark (DEC-004, DEC-005) with the same Chromium. The PNGs are committed, so building the extension doesn't need a browser.
 
 ## Development
 
