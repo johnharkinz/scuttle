@@ -4,6 +4,8 @@ Scuttle v1 is a local command-line experiment. It reads an **initial snapshot** 
 
 This spec is ready to build. It was worked out on the [Scuttle v1 map](https://github.com/johnharkinz/scuttle/issues/1), and each section links to the ticket that holds the reasoning. The original brief is [`docs/handoff.md`](handoff.md). Where the two differ, this spec wins (see [Where this differs from the handoff](#12-where-this-differs-from-the-handoff)).
 
+**Since v1:** the Chrome extension was decided in [#19](https://github.com/johnharkinz/scuttle/issues/19#issuecomment-7197955290) and built in [#21](https://github.com/johnharkinz/scuttle/issues/21). It adds `extension/` and `scripts/`, and reuses `extract`, `compare` and `report` unchanged in behaviour. Sections 8, 9 and 11 note where it changes this spec. Everything else still holds for the CLI and for the core the extension shares.
+
 ## 1. Purpose and limits
 
 Scuttle compares what the server sends with what JavaScript reveals. Nothing more. Fewer trustworthy findings beat a sophisticated report.
@@ -148,6 +150,7 @@ Reasoning: [What does a finding look like, and how is the report laid out?](http
 
 - Node 22, TypeScript (ESM), `cheerio`, `vitest`, `tsx`. No other dependencies without flagging them first.
 - `npm run scuttle` runs `src/cli.ts`, and `npm test` runs `vitest`.
+- The extension (#21) adds three dev dependencies: `esbuild` to bundle it, `playwright-core` to launch Chrome for Testing for `try:extension`, and `@types/chrome`.
 
 ```text
 src/
@@ -157,14 +160,16 @@ src/
 ├── report.ts      # Finding[] → Markdown
 └── cli.ts         # arguments, file reading, --json
 test/
-└── *.test.ts      # inline HTML only
+└── *.test.ts      # inline HTML, apart from the extension's parity test
+extension/         # since v1 (#21): the Chrome extension, which imports src/
+scripts/           # since v1 (#21): build-, preview- and try-extension
 ```
 
 Aim for **a few hundred lines** of plain TypeScript. That's a design pressure, not a hard limit. Don't add frameworks, plugin systems or per-category comparison machinery.
 
 ## 9. Tests
 
-Tests use inline HTML only. Fixture HTML is gitignored and isn't in CI. Each case below is a pair of tiny snapshots and its expected findings:
+Tests use inline HTML only. Fixture HTML is gitignored and isn't in CI. Since v1 there is one exception: the extension's parity test (#21) checks its bundled core against the CLI on each fixture pair on the machine, and skips the fixtures whose HTML isn't there. Each case below is a pair of tiny snapshots and its expected findings:
 
 1. Whitespace and case differences in a text block → no finding.
 2. A relative link in one snapshot and the same absolute link in the other → no finding.
@@ -218,8 +223,8 @@ Reasoning: [What makes the v1 output useful enough to continue?](https://github.
 
 - **Analysis:** JSON-LD and structured data, images, product-specific reasoning, semantic interpretation, AI or LLM integration.
 - **Running Scuttle at scale:** crawl scheduling, multi-page analysis, scores, robots.txt checks, site-specific rules, automated browser capture (Playwright).
-- **Product decisions:** a shared core library, a web app or browser extension, more checks, multiple URLs or exports. These are decided after the review gate, as a new effort.
-- **UI:** any Scuttle UI, including `scuttle.camas.dev`.
+- **Product decisions:** a shared core library, a web app or browser extension, more checks, multiple URLs or exports. These are decided after the review gate, as a new effort. Since v1, #19 decided on an extension with no web app and no shared library, and #21 built it. The rest are still open.
+- **UI:** any Scuttle UI, including `scuttle.camas.dev`. Since v1, the extension's popup and report page are the exception. They stay unstyled until a camas-design brief is agreed.
 - **Reporting:** counts of text outside any block.
 
 Scuttle's mark is recorded in camas-design DEC-005 and isn't used in v1.
