@@ -94,7 +94,8 @@ const stub = {
       return { id: TAB_ID + 1 };
     },
   },
-  runtime: { sendMessage },
+  // As in Chrome and Edge: no sites to ask for (popup.ts).
+  runtime: { sendMessage, getManifest: () => ({}) },
 };
 
 (globalThis as unknown as { chrome: typeof stub }).chrome = stub;

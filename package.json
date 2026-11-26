@@ -1,5 +1,6 @@
 {
   "name": "scuttle",
+  "version": "0.1.1",
   "private": true,
   "type": "module",
   "engines": {
@@ -12,7 +13,9 @@
     "build:extension": "node scripts/build-extension.mjs",
     "preview:extension": "node scripts/preview-extension.mjs",
     "try:extension": "node scripts/try-extension.mjs",
-    "icons": "node scripts/render-icons.mjs"
+    "icons": "node scripts/render-icons.mjs",
+    "package:extension": "node scripts/package-extension.mjs",
+    "package:source": "node scripts/package-source.mjs"
   },
   "dependencies": {
     "cheerio": "^1.2.0",
@@ -21,6 +24,7 @@
   "devDependencies": {
     "@types/chrome": "^0.3.8",
     "@types/node": "^22.20.5",
+    "addons-linter": "^10.16.0",
     "esbuild": "^0.28.2",
     "playwright-core": "^1.62.1",
     "tsx": "^4.23.15",
