@@ -83,6 +83,7 @@ npm run try:extension      # Chromium with the extension loaded, in a throwaway 
 npm run icons              # re-render extension/icons/ from the mark, after changing it
 npm run package:extension  # one zip per store in build/, linting the Firefox one
 npm run package:source     # the committed tree as a zip, for Firefox Add-ons review
+npm run store-assets       # re-render store/ from the report page, after changing it
 ```
 
 - **`preview:extension`** works in any browser. A stub stands in for the `chrome.*` capture, reading fixture pairs from `fixtures/` with the conditions in their `NOTES.md`. Fixtures whose snapshots aren't on your machine are listed as missing. It also has a blocked example and an unsupported-page example.
@@ -91,6 +92,7 @@ npm run package:source     # the committed tree as a zip, for Firefox Add-ons re
   - `build/scuttle-<version>-chromium.zip`, for the Chrome Web Store and Edge Add-ons, is `extension/manifest.json` as it is. To load it unpacked, open `chrome://extensions` or `edge://extensions`, turn on developer mode, choose **Load unpacked** and pick `build/chromium/`.
   - `build/scuttle-<version>-firefox.zip`, for Firefox Add-ons, lays `extension/manifest.firefox.json` over it: `background.scripts` instead of a service worker, the add-on ID `scuttle@camas.dev` and the site permission it may ask for. Edge rejects `background.scripts`, so the Chromium package can't carry them. To load it, open `about:debugging#/runtime/this-firefox`, choose **Load Temporary Add-on…** and pick `build/firefox/manifest.json`. `addons-linter` checks it first, and stops the packaging on any error.
 - **`package:source`** needs a clean working tree. Mozilla rebuilds the minified scripts from it as [`docs/firefox-review-build.md`](docs/firefox-review-build.md) describes. Run the [Firefox smoke test](docs/firefox-smoke-test.md) before each Firefox upload.
+- **`store-assets`** renders the store screenshot and small promo tile into `store/`. The screenshot is the real report page from the preview harness, fed the made-up `harbourlane.example` pair in `store/demo/`. What each store's form asks for is in [`docs/store-listing.md`](docs/store-listing.md).
 - **`icons`** renders the toolbar icons from the Scuttle mark (DEC-004, DEC-005) with the same Chromium. The PNGs are committed, so building the extension doesn't need a browser.
 
 ## Development
