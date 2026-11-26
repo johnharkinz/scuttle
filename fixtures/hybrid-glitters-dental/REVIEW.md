@@ -3,7 +3,7 @@
 **Role:** Hybrid (informational only); behaves as a control
 **URL:** https://glitters-dental-sparkle.lovable.app/
 
-Labels are proposed by an agent. **The human confirms every label** (spec §10). Cause is filled in only for false positives.
+Labels were proposed by an agent and **confirmed by the human** (spec §10). Cause is filled in only for false positives.
 
 ## Run
 
