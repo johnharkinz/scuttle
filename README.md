@@ -58,7 +58,7 @@ npm run scuttle -- fixtures/my-page/initial.html fixtures/my-page/rendered.html 
 
 ## Reading the report
 
-Each **finding** is one difference between the two snapshots, with evidence in the original values. Its **direction** says whether the value is only in the initial snapshot, only appears after rendering, or changed. The report starts with a summary table of counts and then lists every finding.
+Each **finding** is one difference between the two snapshots, with evidence in the original values. Its **direction** is *only with JavaScript* (crawlers that don't run JavaScript miss it), *only without JavaScript* (only those crawlers see it) or *different with JavaScript*. If you know SEO tools, this is their raw HTML vs rendered HTML comparison. The report starts with a summary table of counts and then lists every finding.
 
 Scuttle shows that the snapshots differ. It doesn't judge whether a difference matters, and it doesn't claim to know what any particular crawler indexes.
 
@@ -71,7 +71,7 @@ The extension in `extension/` runs the same comparison on the page you're viewin
 
 - **Rendered snapshot:** the tab's `document.documentElement.outerHTML` at the moment you click. Scuttle doesn't wait, scroll, click or touch a consent banner, so let the page settle first.
 - **Initial snapshot:** a fetch of the tab's URL straight afterwards, with cookies and caching off. This is what the server sends to your browser, not what a crawler gets.
-- **Blocked fetch:** a non-2xx response, a non-HTML response or a recognised bot challenge (Cloudflare, Imperva) is reported as *initial snapshot blocked*, with the reason and no findings.
+- **Blocked fetch:** a non-2xx response, a non-HTML response or a recognised bot challenge (Cloudflare, Imperva) is reported as *fetch without JavaScript blocked*, with the reason and no findings.
 - **The report** shows the CLI report's findings and groups, plus the capture conditions: both URLs, both times and the gap between them, the time since the page loaded, `readyState`, viewport and user agent. Signed-in state and consent choices are not controlled.
 
 The pages follow `camas-design` DEC-006, and the fonts are bundled in `extension/fonts/`, so nothing is fetched to show them.

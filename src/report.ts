@@ -6,7 +6,7 @@ const CATEGORIES = [
   ['link', 'Links'],
   ['text', 'Text blocks'],
 ] as const;
-const DIRECTIONS: Direction[] = ['only in initial', 'only after rendering', 'changed'];
+const DIRECTIONS: Direction[] = ['only without JavaScript', 'only with JavaScript', 'different with JavaScript'];
 const MAX_TEXT = 160;
 
 const quote = (s: string) => `“${s}”`;
@@ -26,7 +26,7 @@ export function line(f: Finding): string {
 
 export const DIRECTION_HEADINGS = DIRECTIONS.map(d => d[0].toUpperCase() + d.slice(1));
 
-/** A group's heading, such as “Links: only after rendering (3)”. */
+/** A group's heading, such as “Links: only with JavaScript (3)”. */
 export const groupHeading = (label: string, direction: Direction, count: number) => `${label}: ${direction} (${count})`;
 
 /**
@@ -39,7 +39,7 @@ export function groupFindings(findings: Finding[]) {
 
   const summary = CATEGORIES.map(([category, label]) => {
     const isMetadata = category === 'title' || category === 'description';
-    const counts = DIRECTIONS.map(d => (d === 'changed' && !isMetadata ? null : group(category, d).length));
+    const counts = DIRECTIONS.map(d => (d === 'different with JavaScript' && !isMetadata ? null : group(category, d).length));
     return { category, label, counts };
   });
   const groups = CATEGORIES.flatMap(([category, label]) =>

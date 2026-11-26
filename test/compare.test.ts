@@ -9,8 +9,8 @@ const findings = (initial: string, rendered: string) => compare(extract(initial,
 describe('text blocks', () => {
   it('reports a genuine addition and a genuine removal, one in each direction', () => {
     expect(findings(page('<p>Same</p><p>Removed by JS</p>'), page('<p>Same</p><h2>Added by JS</h2>'))).toEqual([
-      { category: 'text', direction: 'only in initial', text: 'Removed by JS', kind: 'p' },
-      { category: 'text', direction: 'only after rendering', text: 'Added by JS', kind: 'h2' },
+      { category: 'text', direction: 'only without JavaScript', text: 'Removed by JS', kind: 'p' },
+      { category: 'text', direction: 'only with JavaScript', text: 'Added by JS', kind: 'h2' },
     ]);
   });
 
@@ -20,26 +20,26 @@ describe('text blocks', () => {
 
   it('does not strip zero-width characters from the text key', () => {
     for (const zw of ['\u200b', '\ufeff'])
-      expect(findings(page('<p>Hi</p>'), page(`<p>${zw}Hi</p>`)).map(f => f.direction)).toEqual(['only in initial', 'only after rendering']);
+      expect(findings(page('<p>Hi</p>'), page(`<p>${zw}Hi</p>`)).map(f => f.direction)).toEqual(['only without JavaScript', 'only with JavaScript']);
   });
 
   it('extracts content inside [hidden] and aria-hidden="true"', () => {
     expect(findings(page(''), page('<div hidden><p>Hidden</p></div><p aria-hidden="true">Aria hidden</p>'))).toEqual([
-      { category: 'text', direction: 'only after rendering', text: 'Hidden', kind: 'p' },
-      { category: 'text', direction: 'only after rendering', text: 'Aria hidden', kind: 'p' },
+      { category: 'text', direction: 'only with JavaScript', text: 'Hidden', kind: 'p' },
+      { category: 'text', direction: 'only with JavaScript', text: 'Aria hidden', kind: 'p' },
     ]);
   });
 
   it('gives an li wrapping a p one block, not two', () => {
     expect(findings(page(''), page('<ul><li><p>Wrapped</p></li></ul>'))).toEqual([
-      { category: 'text', direction: 'only after rendering', text: 'Wrapped', kind: 'p' },
+      { category: 'text', direction: 'only with JavaScript', text: 'Wrapped', kind: 'p' },
     ]);
   });
 
   it('keeps loose text in an outer block as its own block, and inline text as part of its block', () => {
     expect(findings(page(''), page('<li>Loose <p>Inner <strong>bold</strong>!</p> tail</li>'))).toEqual([
-      { category: 'text', direction: 'only after rendering', text: 'Loose tail', kind: 'li' },
-      { category: 'text', direction: 'only after rendering', text: 'Inner bold!', kind: 'p' },
+      { category: 'text', direction: 'only with JavaScript', text: 'Loose tail', kind: 'li' },
+      { category: 'text', direction: 'only with JavaScript', text: 'Inner bold!', kind: 'p' },
     ]);
   });
 
@@ -60,7 +60,7 @@ describe('text blocks', () => {
 
   it('records the nearest landmark from the first occurrence as evidence', () => {
     expect(findings(page(''), page('<main><section><nav><p>Menu</p></nav></section></main><footer><p>Menu</p></footer>'))).toEqual([
-      { category: 'text', direction: 'only after rendering', text: 'Menu', kind: 'p', landmark: 'nav' },
+      { category: 'text', direction: 'only with JavaScript', text: 'Menu', kind: 'p', landmark: 'nav' },
     ]);
   });
 
@@ -74,16 +74,16 @@ describe('links', () => {
     expect(findings(page('<a href="/about">About</a>'), page('<a href="https://example.com/about">About</a>'))).toEqual([]);
   });
 
-  it('reports a link only after rendering, with its anchor texts in document order', () => {
+  it('reports a link only with JavaScript, with its anchor texts in document order', () => {
     expect(findings(page(''), page('<header><a href="tel:+351966616502">Marcar</a></header><a href="tel:+351966616502">(+351) 966 616 502</a><a href="tel:+351966616502">Marcar</a>'))).toEqual([
-      { category: 'link', direction: 'only after rendering', url: 'tel:+351966616502', scope: 'external', texts: ['Marcar', '(+351) 966 616 502'], landmark: 'header' },
+      { category: 'link', direction: 'only with JavaScript', url: 'tel:+351966616502', scope: 'external', texts: ['Marcar', '(+351) 966 616 502'], landmark: 'header' },
     ]);
   });
 
   it('ignores empty, fragment-only and javascript: links, and keeps tel: as external', () => {
     const links = '<a href="">Empty</a><a href="#top">Top</a><a href="javascript:void(0)">JS</a><a>No href</a><a href="tel:123">Call</a>';
     expect(findings(page(''), page(links))).toEqual([
-      { category: 'link', direction: 'only after rendering', url: 'tel:123', scope: 'external', texts: ['Call'] },
+      { category: 'link', direction: 'only with JavaScript', url: 'tel:123', scope: 'external', texts: ['Call'] },
     ]);
   });
 
@@ -127,7 +127,7 @@ describe('links', () => {
 
   it('counts link text as part of its text block', () => {
     expect(findings(page('<p>Read <a href="/more">more</a></p>'), page('<p>Read more</p>'))).toEqual([
-      { category: 'link', direction: 'only in initial', url: 'https://example.com/more', scope: 'internal', texts: ['more'] },
+      { category: 'link', direction: 'only without JavaScript', url: 'https://example.com/more', scope: 'internal', texts: ['more'] },
     ]);
   });
 });
@@ -135,9 +135,9 @@ describe('links', () => {
 describe('title and meta description', () => {
   const title = (t: string) => page('<p>Same</p>', t);
 
-  it('reports a title missing in initial as only after rendering', () => {
+  it('reports a title missing in initial as only with JavaScript', () => {
     expect(findings(title(''), title('<title>Book a consultation</title>'))).toEqual([
-      { category: 'title', direction: 'only after rendering', initial: null, rendered: 'Book a consultation' },
+      { category: 'title', direction: 'only with JavaScript', initial: null, rendered: 'Book a consultation' },
     ]);
   });
 
@@ -145,9 +145,9 @@ describe('title and meta description', () => {
     expect(findings(title('<title> </title>'), title(''))).toEqual([]);
   });
 
-  it('reports different titles as changed, with the original values, whitespace collapsed', () => {
+  it('reports different titles as different with JavaScript, with the original values, whitespace collapsed', () => {
     expect(findings(title('<title>Lovable App</title>'), title('<title>Men’s Scalp  Expert</title>'))).toEqual([
-      { category: 'title', direction: 'changed', initial: 'Lovable App', rendered: 'Men’s Scalp Expert' },
+      { category: 'title', direction: 'different with JavaScript', initial: 'Lovable App', rendered: 'Men’s Scalp Expert' },
     ]);
   });
 
@@ -157,7 +157,7 @@ describe('title and meta description', () => {
 
   it('does not take an SVG <title> in the body as the page title', () => {
     expect(findings(page('<svg><title>Icon</title></svg>'), page('<svg><title>Other icon</title></svg>', '<title>Page</title>'))).toEqual([
-      { category: 'title', direction: 'only after rendering', initial: null, rendered: 'Page' },
+      { category: 'title', direction: 'only with JavaScript', initial: null, rendered: 'Page' },
     ]);
   });
 
@@ -165,14 +165,14 @@ describe('title and meta description', () => {
     const meta = (d: string) => page('', d);
     expect(findings(meta('<meta name="Description" content="A"><meta name="description" content="B">'), meta('<meta name="description" content="A">'))).toEqual([]);
     expect(findings(meta('<meta name="DESCRIPTION" content="Precision haircuts">'), meta(''))).toEqual([
-      { category: 'description', direction: 'only in initial', initial: 'Precision haircuts', rendered: null },
+      { category: 'description', direction: 'only without JavaScript', initial: 'Precision haircuts', rendered: null },
     ]);
   });
 
   it('treats a meta description with no content as empty', () => {
     expect(findings(page('', '<meta name="description">'), page(''))).toEqual([]);
     expect(findings(page('', '<meta name="description">'), page('', '<meta name="description" content="New">'))).toEqual([
-      { category: 'description', direction: 'only after rendering', initial: '', rendered: 'New' },
+      { category: 'description', direction: 'only with JavaScript', initial: '', rendered: 'New' },
     ]);
   });
 
@@ -180,10 +180,10 @@ describe('title and meta description', () => {
     const initial = page('<p>Old</p>', '<title>A</title><meta name="description" content="A">');
     const rendered = page('<a href="/x">X</a>', '<title>B</title><meta name="description" content="B">');
     expect(findings(initial, rendered).map(f => `${f.category}: ${f.direction}`)).toEqual([
-      'title: changed',
-      'description: changed',
-      'link: only after rendering',
-      'text: only in initial',
+      'title: different with JavaScript',
+      'description: different with JavaScript',
+      'link: only with JavaScript',
+      'text: only without JavaScript',
     ]);
   });
 });
