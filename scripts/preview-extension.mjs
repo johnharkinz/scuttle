@@ -3,13 +3,14 @@
 import * as esbuild from 'esbuild';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { createServer } from 'node:http';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildExtension, bundleOptions } from './build-extension.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const ext = join(root, 'extension');
-const fixturesDir = join(root, 'fixtures');
+// FIXTURES_DIR swaps in another set of pairs: npm run store-assets uses the made-up one in store/demo/.
+const fixturesDir = process.env.FIXTURES_DIR ? resolve(root, process.env.FIXTURES_DIR) : join(root, 'fixtures');
 const port = Number(process.env.PORT ?? 4321);
 const FILES = ['NOTES.md', 'initial.html', 'rendered.html'];
 
