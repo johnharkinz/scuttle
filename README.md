@@ -6,6 +6,8 @@ You give it two snapshots of one page: the HTML the server sends before any Java
 
 Scuttle v1 is a local command-line experiment. It reads snapshot files you capture yourself. It doesn't fetch pages or drive a browser.
 
+There is also a Chrome extension, in development, that captures both snapshots of the page you're viewing and compares them in your browser. See [Extension](#extension).
+
 ## Requirements
 
 - Node 22 or later
@@ -63,14 +65,34 @@ Scuttle shows that the snapshots differ. It doesn't judge whether a difference m
 - [`docs/spec-v1.md`](docs/spec-v1.md) defines exactly what is extracted, how values are compared and how the report is laid out.
 - [`GLOSSARY.md`](GLOSSARY.md) defines the terms, such as finding, direction, landmark and the review labels.
 
+## Extension
+
+The extension in `extension/` runs the same comparison on the page you're viewing. Click *Compare this page* and the report opens in a new tab. Nothing is sent or stored, and it asks only for `activeTab` and `scripting`.
+
+- **Rendered snapshot:** the tab's `document.documentElement.outerHTML` at the moment you click. Scuttle doesn't wait, scroll, click or touch a consent banner, so let the page settle first.
+- **Initial snapshot:** a fetch of the tab's URL straight afterwards, with cookies and caching off. This is what the server sends to your browser, not what a crawler gets.
+- **Blocked fetch:** a non-2xx response, a non-HTML response or a recognised bot challenge (Cloudflare, Imperva) is reported as *initial snapshot blocked*, with the reason and no findings.
+- **The report** shows the CLI report's findings and groups, plus the capture conditions: both URLs, both times and the gap between them, the time since the page loaded, `readyState`, viewport and user agent. Signed-in state and consent choices are not controlled.
+
+The pages are plain and unstyled until a design brief for them is agreed in `camas-design`.
+
+```sh
+npm run build:extension    # bundle into extension/dist/, then load extension/ unpacked
+npm run preview:extension  # the real popup and report pages at http://localhost:4321/, fed from fixtures/
+npm run try:extension      # Chromium with the extension loaded, in a throwaway profile
+```
+
+- **`preview:extension`** works in any browser. A stub stands in for the `chrome.*` capture, reading fixture pairs from `fixtures/` with the conditions in their `NOTES.md`. Fixtures whose snapshots aren't on your machine are listed as missing. It also has a blocked example and an unsupported-page example.
+- **`try:extension [url]`** opens Chrome for Testing from `playwright-core`, because branded Chrome ignores `--load-extension`. If it isn't installed, run `npx playwright-core install chromium`. Open Scuttle from the extensions (puzzle) menu. The profile is deleted when you close the browser.
+
 ## Development
 
 ```sh
-npm test           # vitest, inline HTML test cases only
-npm run typecheck  # tsc --noEmit
+npm test           # vitest
+npm run typecheck  # tsc --noEmit, for src/ and extension/
 ```
 
-The code lives in `src/`: `extract.ts`, `normalise.ts`, `compare.ts`, `report.ts` and `cli.ts`. Tests live in `test/`.
+The code lives in `src/`: `extract.ts`, `normalise.ts`, `compare.ts`, `report.ts` and `cli.ts`. The extension imports `extract`, `compare` and `report` from there. Tests live in `test/`. Most use inline HTML. The parity test checks that the extension's bundled core gives the same findings as the CLI on every fixture pair on your machine, and skips the rest.
 
 `fixtures/` holds the fixture pairs used for the review gate, one directory per page, named after its role (`gap-`, `control-` or `hybrid-`). Only these files are committed:
 

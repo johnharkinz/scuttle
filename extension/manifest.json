@@ -1,0 +1,9 @@
+{
+  "manifest_version": 3,
+  "name": "Scuttle",
+  "version": "0.1.0",
+  "description": "Compare what the server sends with what JavaScript reveals, for the page you're viewing. Nothing is sent or stored.",
+  "action": { "default_popup": "popup.html", "default_title": "Scuttle" },
+  "background": { "service_worker": "dist/background.js", "type": "module" },
+  "permissions": ["activeTab", "scripting"]
+}
