@@ -6,7 +6,7 @@ You give it two snapshots of one page: the HTML the server sends before any Java
 
 Scuttle v1 is a local command-line experiment. It reads snapshot files you capture yourself. It doesn't fetch pages or drive a browser.
 
-There is also a Chrome extension, in development, that captures both snapshots of the page you're viewing and compares them in your browser. See [Extension](#extension).
+There is also a browser extension for Chrome, Edge and Firefox, in development, that captures both snapshots of the page you're viewing and compares them in your browser. See [Extension](#extension).
 
 ## Requirements
 
@@ -67,7 +67,7 @@ Scuttle shows that the snapshots differ. It doesn't judge whether a difference m
 
 ## Extension
 
-The extension in `extension/` runs the same comparison on the page you're viewing. Click *Compare this page* and the report opens in a new tab. Nothing is sent or stored, and it asks only for `activeTab` and `scripting`.
+The extension in `extension/` runs the same comparison on the page you're viewing. Click *Compare this page* and the report opens in a new tab. Nothing is sent or stored. In Chrome and Edge it asks only for `activeTab` and `scripting`. Firefox also asks for permission for the page's site when you compare it, because there `activeTab` doesn't cover the fetch (see [`docs/firefox-smoke-test.md`](docs/firefox-smoke-test.md)).
 
 - **Rendered snapshot:** the tab's `document.documentElement.outerHTML` at the moment you click. Scuttle doesn't wait, scroll, click or touch a consent banner, so let the page settle first.
 - **Initial snapshot:** a fetch of the tab's URL straight afterwards, with cookies and caching off. This is what the server sends to your browser, not what a crawler gets.
@@ -81,10 +81,16 @@ npm run build:extension    # bundle into extension/dist/, then load extension/ u
 npm run preview:extension  # the real popup and report pages at http://localhost:4321/, fed from fixtures/
 npm run try:extension      # Chromium with the extension loaded, in a throwaway profile
 npm run icons              # re-render extension/icons/ from the mark, after changing it
+npm run package:extension  # one zip per store in build/, linting the Firefox one
+npm run package:source     # the committed tree as a zip, for Firefox Add-ons review
 ```
 
 - **`preview:extension`** works in any browser. A stub stands in for the `chrome.*` capture, reading fixture pairs from `fixtures/` with the conditions in their `NOTES.md`. Fixtures whose snapshots aren't on your machine are listed as missing. It also has a blocked example and an unsupported-page example.
 - **`try:extension [url]`** opens Chrome for Testing from `playwright-core`, because branded Chrome ignores `--load-extension`. If it isn't installed, run `npx playwright-core install chromium`. Open Scuttle from the extensions (puzzle) menu. The profile is deleted when you close the browser.
+- **`package:extension`** writes two packages from the same source. They differ only in `manifest.json`:
+  - `build/scuttle-<version>-chromium.zip`, for the Chrome Web Store and Edge Add-ons, is `extension/manifest.json` as it is. To load it unpacked, open `chrome://extensions` or `edge://extensions`, turn on developer mode, choose **Load unpacked** and pick `build/chromium/`.
+  - `build/scuttle-<version>-firefox.zip`, for Firefox Add-ons, lays `extension/manifest.firefox.json` over it: `background.scripts` instead of a service worker, the add-on ID `scuttle@camas.dev` and the site permission it may ask for. Edge rejects `background.scripts`, so the Chromium package can't carry them. To load it, open `about:debugging#/runtime/this-firefox`, choose **Load Temporary Add-on…** and pick `build/firefox/manifest.json`. `addons-linter` checks it first, and stops the packaging on any error.
+- **`package:source`** needs a clean working tree. Mozilla rebuilds the minified scripts from it as [`docs/firefox-review-build.md`](docs/firefox-review-build.md) describes. Run the [Firefox smoke test](docs/firefox-smoke-test.md) before each Firefox upload.
 - **`icons`** renders the toolbar icons from the Scuttle mark (DEC-004, DEC-005) with the same Chromium. The PNGs are committed, so building the extension doesn't need a browser.
 
 ## Development

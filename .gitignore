@@ -5,3 +5,6 @@ node_modules/
 
 # Built extension scripts.
 extension/dist/
+
+# Store packages (npm run package:extension, package:source).
+build/

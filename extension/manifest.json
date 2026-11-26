@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Scuttle",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Compare what the server sends with what JavaScript reveals, for the page you're viewing. Nothing is sent or stored.",
   "icons": { "16": "icons/icon16.png", "32": "icons/icon32.png", "48": "icons/icon48.png", "128": "icons/icon128.png" },
   "action": {
