@@ -2,3 +2,6 @@
 fixtures/*/*.html
 .DS_Store
 node_modules/
+
+# Built extension scripts.
+extension/dist/
